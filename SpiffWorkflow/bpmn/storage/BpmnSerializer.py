@@ -15,6 +15,7 @@ from __future__ import division
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+from ConfigParser import NoOptionError
 
 from SpiffWorkflow.util.compat import configparser
 from io import BytesIO, TextIOWrapper
@@ -64,7 +65,10 @@ class BpmnSerializer(Serializer):
             parser_class_module = config.get('MetaData', 'parser_class_module', fallback=None)
         except TypeError:
             # unfortunately the fallback= does not exist on python 2
-            parser_class_module = config.get('MetaData', 'parser_class_module', None)
+            try:
+                parser_class_module = config.get('MetaData', 'parser_class_module')
+            except NoOptionError:
+                parser_class_module = None
 
         if parser_class_module:
             mod = __import__(parser_class_module, fromlist=[config.get('MetaData', 'parser_class')])
