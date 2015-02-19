@@ -57,6 +57,9 @@ class DictionarySerializer(Serializer):
     def _serialize_operator(self, op):
         return [self._serialize_arg(a) for a in op.args]
 
+    def _deserialize_operator(self, s_state):
+        return [self._deserialize_arg(c) for c in s_state]
+
     def _serialize_operator_equal(self, op):
         return self._serialize_operator(op)
 
@@ -501,7 +504,7 @@ class DictionarySerializer(Serializer):
             raise TaskNotSupportedError(
                 "Subworkflow tasks cannot be serialized (due to their use of" +
                 " internal_data to store the subworkflow).")
-        
+
         s_state = dict()
 
         # id
