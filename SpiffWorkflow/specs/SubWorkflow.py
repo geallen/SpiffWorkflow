@@ -6,12 +6,12 @@ from __future__ import division
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 2.1 of the License, or (at your option) any later version.
-# 
+#
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -21,6 +21,7 @@ from SpiffWorkflow.exceptions import WorkflowException
 from SpiffWorkflow.operators import valueof
 from SpiffWorkflow.specs.TaskSpec import TaskSpec
 import SpiffWorkflow
+
 
 class SubWorkflow(TaskSpec):
     """
@@ -36,8 +37,8 @@ class SubWorkflow(TaskSpec):
                  parent,
                  name,
                  file,
-                 in_assign = None,
-                 out_assign = None,
+                 in_assign=None,
+                 out_assign=None,
                  **kwargs):
         """
         Constructor.
@@ -58,11 +59,11 @@ class SubWorkflow(TaskSpec):
         assert parent is not None
         assert name is not None
         super(SubWorkflow, self).__init__(parent, name, **kwargs)
-        self.file       = None
-        self.in_assign  = in_assign is not None and in_assign or []
+        self.file = None
+        self.in_assign = in_assign is not None and in_assign or []
         self.out_assign = out_assign is not None and out_assign or []
         if file is not None:
-            dirname   = os.path.dirname(parent.file)
+            dirname = os.path.dirname(parent.file)
             self.file = os.path.join(dirname, file)
 
     def test(self):
@@ -83,15 +84,16 @@ class SubWorkflow(TaskSpec):
     def _create_subworkflow(self, my_task):
         from SpiffWorkflow.storage import XmlSerializer
         from SpiffWorkflow.specs import WorkflowSpec
-        file           = valueof(my_task, self.file)
-        serializer     = XmlSerializer()
-        xml            = open(file).read()
-        wf_spec        = WorkflowSpec.deserialize(serializer, xml, filename = file)
+
+        file = valueof(my_task, self.file)
+        serializer = XmlSerializer()
+        xml = open(file).read()
+        wf_spec = WorkflowSpec.deserialize(serializer, xml, filename=file)
         outer_workflow = my_task.workflow.outer_workflow
-        return SpiffWorkflow.Workflow(wf_spec, parent = outer_workflow)
+        return SpiffWorkflow.Workflow(wf_spec, parent=outer_workflow)
 
     def _on_ready_before_hook(self, my_task):
-        subworkflow    = self._create_subworkflow(my_task)
+        subworkflow = self._create_subworkflow(my_task)
         subworkflow.completed_event.connect(self._on_subworkflow_completed, my_task)
 
         # Integrate the tree of the subworkflow into the tree of this workflow.
@@ -103,7 +105,7 @@ class SubWorkflow(TaskSpec):
             my_task.children.insert(0, child)
             child.parent = my_task
 
-        my_task._set_internal_data(subworkflow = subworkflow)
+        my_task._set_internal_data(subworkflow=subworkflow)
 
     def _on_ready_hook(self, my_task):
         # Assign variables, if so requested.
