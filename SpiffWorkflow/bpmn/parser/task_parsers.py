@@ -132,6 +132,21 @@ class CallActivityParser(TaskParser):
         return self.parser.get_process_parser(calledElement)
 
 
+class SubProcessParser(TaskParser):
+    """
+    Parses a SubProcess node.
+    """
+
+    def create_task(self):
+        wf_spec = self.get_subprocess_parser().get_spec()
+        return self.spec_class(self.spec, self.get_task_spec_name(), wf_spec=wf_spec,
+                               wf_class=self.parser.WORKFLOW_CLASS, description=self.node.get('name', None))
+
+    def get_subprocess_parser(self):
+        process_id = self.node.get('id', None)
+        return self.parser.get_process_parser(process_id)
+
+
 class ScriptTaskParser(TaskParser):
     """
     Parses a script task
