@@ -21,6 +21,7 @@ from SpiffWorkflow.bpmn.BpmnWorkflow import BpmnWorkflow
 from SpiffWorkflow.bpmn.parser.ValidationException import ValidationException
 from SpiffWorkflow.bpmn.specs.BoundaryEvent import BoundaryEvent
 from SpiffWorkflow.bpmn.specs.CallActivity import CallActivity
+from SpiffWorkflow.bpmn.specs.SubProcess import SubProcess
 from SpiffWorkflow.bpmn.specs.ExclusiveGateway import ExclusiveGateway
 from SpiffWorkflow.bpmn.specs.InclusiveGateway import InclusiveGateway
 from SpiffWorkflow.bpmn.specs.IntermediateCatchEvent import IntermediateCatchEvent
@@ -58,6 +59,7 @@ class BpmnParser(object):
         full_tag('parallelGateway')     : (ParallelGatewayParser, ParallelGateway),
         full_tag('inclusiveGateway')     : (InclusiveGatewayParser, InclusiveGateway),
         full_tag('callActivity')        : (CallActivityParser, CallActivity),
+        full_tag('subProcess')        : (SubProcessParser, SubProcess),
         full_tag('scriptTask')                  : (ScriptTaskParser, ScriptTask),
         full_tag('intermediateCatchEvent')      : (IntermediateCatchEventParser, IntermediateCatchEvent),
         full_tag('boundaryEvent')               : (BoundaryEventParser, BoundaryEvent),
@@ -123,7 +125,7 @@ class BpmnParser(object):
         """
         xpath = xpath_eval(bpmn)
 
-        processes = xpath('.//bpmn:process')
+        processes = xpath('.//bpmn:process') + xpath('.//bpmn:subProcess')
         for process in processes:
             process_parser = self.PROCESS_PARSER_CLASS(self, process, svg, filename=filename, doc_xpath=xpath)
             if process_parser.get_id() in self.process_parsers:
