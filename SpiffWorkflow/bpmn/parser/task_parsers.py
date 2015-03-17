@@ -116,7 +116,8 @@ class InclusiveGatewayParser(TaskParser):
 
 class CallActivityParser(TaskParser):
     """
-    Parses a CallActivity node. This also supports the not-quite-correct BPMN that Signavio produces (which does not have a calledElement attribute).
+    Parses a CallActivity node. This also supports the not-quite-correct BPMN that Signavio produces
+    (which does not have a calledElement attribute).
     """
 
     def create_task(self):
@@ -125,11 +126,11 @@ class CallActivityParser(TaskParser):
                                wf_class=self.parser.WORKFLOW_CLASS, description=self.node.get('name', None))
 
     def get_subprocess_parser(self):
-        calledElement = self.node.get('calledElement', None)
-        if not calledElement:
+        called_element = self.node.get('calledElement', None)
+        if not called_element:
             raise ValidationException('No "calledElement" attribute for Call Activity.', node=self.node,
                                       filename=self.process_parser.filename)
-        return self.parser.get_process_parser(calledElement)
+        return self.parser.get_process_parser(called_element)
 
 
 class SubProcessParser(TaskParser):
@@ -164,6 +165,19 @@ class ScriptTaskParser(TaskParser):
         return one(self.xpath('.//bpmn:script')).text
 
 
+class ServiceTaskParser(TaskParser):
+    """
+    Parses a script task
+    """
+
+    def create_task(self):
+        return self.spec_class(self.spec, self.get_task_spec_name(),
+                               self.node.get(full_attr('class'), None),
+                               self.node.get(full_attr('expression'), None),
+                               self.node.get(full_attr('resultVariable'), None))
+
+
+
 class IntermediateCatchEventParser(TaskParser):
     """
     Parses an Intermediate Catch Event. This currently onlt supports Message and Timer event definitions.
@@ -178,13 +192,13 @@ class IntermediateCatchEventParser(TaskParser):
         """
         Parse the event definition node, and return an instance of Event
         """
-        messageEventDefinition = first(self.xpath('.//bpmn:messageEventDefinition'))
-        if messageEventDefinition is not None:
-            return self.get_message_event_definition(messageEventDefinition)
+        message_event_definition = first(self.xpath('.//bpmn:messageEventDefinition'))
+        if message_event_definition is not None:
+            return self.get_message_event_definition(message_event_definition)
 
-        timerEventDefinition = first(self.xpath('.//bpmn:timerEventDefinition'))
-        if timerEventDefinition is not None:
-            return self.get_timer_event_definition(timerEventDefinition)
+        timer_event_definition = first(self.xpath('.//bpmn:timerEventDefinition'))
+        if timer_event_definition is not None:
+            return self.get_timer_event_definition(timer_event_definition)
 
         raise NotImplementedError('Unsupported Intermediate Catch Event: %r', ET.tostring(self.node))
 

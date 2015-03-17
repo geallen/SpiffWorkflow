@@ -29,6 +29,7 @@ from SpiffWorkflow.bpmn.specs.ManualTask import ManualTask
 from SpiffWorkflow.bpmn.specs.NoneTask import NoneTask
 from SpiffWorkflow.bpmn.specs.ParallelGateway import ParallelGateway
 from SpiffWorkflow.bpmn.specs.ScriptTask import ScriptTask
+from SpiffWorkflow.bpmn.specs.ServiceTask import ServiceTask
 from SpiffWorkflow.bpmn.specs.StartEvent import StartEvent
 from SpiffWorkflow.bpmn.specs.UserTask import UserTask
 from SpiffWorkflow.bpmn.specs.EndEvent import EndEvent
@@ -36,6 +37,7 @@ from SpiffWorkflow.bpmn.parser.ProcessParser import ProcessParser
 from SpiffWorkflow.bpmn.parser.util import *
 from SpiffWorkflow.bpmn.parser.task_parsers import *
 import xml.etree.ElementTree as ET
+
 
 class BpmnParser(object):
     """
@@ -50,20 +52,21 @@ class BpmnParser(object):
     """
 
     PARSER_CLASSES = {
-        full_tag('startEvent')          : (StartEventParser, StartEvent),
-        full_tag('endEvent')            : (EndEventParser, EndEvent),
-        full_tag('userTask')            : (UserTaskParser, UserTask),
-        full_tag('task')                : (NoneTaskParser, NoneTask),
-        full_tag('manualTask')          : (ManualTaskParser, ManualTask),
-        full_tag('exclusiveGateway')    : (ExclusiveGatewayParser, ExclusiveGateway),
-        full_tag('parallelGateway')     : (ParallelGatewayParser, ParallelGateway),
-        full_tag('inclusiveGateway')     : (InclusiveGatewayParser, InclusiveGateway),
-        full_tag('callActivity')        : (CallActivityParser, CallActivity),
-        full_tag('subProcess')        : (SubProcessParser, SubProcess),
-        full_tag('scriptTask')                  : (ScriptTaskParser, ScriptTask),
-        full_tag('intermediateCatchEvent')      : (IntermediateCatchEventParser, IntermediateCatchEvent),
-        full_tag('boundaryEvent')               : (BoundaryEventParser, BoundaryEvent),
-        }
+        full_tag('startEvent'): (StartEventParser, StartEvent),
+        full_tag('endEvent'): (EndEventParser, EndEvent),
+        full_tag('userTask'): (UserTaskParser, UserTask),
+        full_tag('task'): (NoneTaskParser, NoneTask),
+        full_tag('manualTask'): (ManualTaskParser, ManualTask),
+        full_tag('exclusiveGateway'): (ExclusiveGatewayParser, ExclusiveGateway),
+        full_tag('parallelGateway'): (ParallelGatewayParser, ParallelGateway),
+        full_tag('inclusiveGateway'): (InclusiveGatewayParser, InclusiveGateway),
+        full_tag('callActivity'): (CallActivityParser, CallActivity),
+        full_tag('subProcess'): (SubProcessParser, SubProcess),
+        full_tag('scriptTask'): (ScriptTaskParser, ScriptTask),
+        full_tag('serviceTask'): (ServiceTaskParser, ServiceTask),
+        full_tag('intermediateCatchEvent'): (IntermediateCatchEventParser, IntermediateCatchEvent),
+        full_tag('boundaryEvent'): (BoundaryEventParser, BoundaryEvent),
+    }
 
     OVERRIDE_PARSER_CLASSES = {}
 
@@ -140,9 +143,11 @@ class BpmnParser(object):
         condition_expression_node = conditionExpression = first(xpath('.//bpmn:conditionExpression'))
         if conditionExpression is not None:
             conditionExpression = conditionExpression.text
-        return self.parse_condition(conditionExpression, outgoing_task, outgoing_task_node, sequence_flow_node, condition_expression_node, task_parser)
+        return self.parse_condition(conditionExpression, outgoing_task, outgoing_task_node, sequence_flow_node,
+                                    condition_expression_node, task_parser)
 
-    def parse_condition(self, condition_expression, outgoing_task, outgoing_task_node, sequence_flow_node, condition_expression_node, task_parser):
+    def parse_condition(self, condition_expression, outgoing_task, outgoing_task_node, sequence_flow_node,
+                        condition_expression_node, task_parser):
         """
         Pre-parse the given condition expression, and return the parsed version. The returned version will be passed to the Script Engine
         for evaluation.

@@ -17,16 +17,20 @@ from __future__ import division
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-BPMN_MODEL_NS='http://www.omg.org/spec/BPMN/20100524/MODEL'
+BPMN_MODEL_NS = 'http://www.omg.org/spec/BPMN/20100524/MODEL'
+ATTRIBUTE_NS = 'http://activiti.org/bpmn'
 
-def one(nodes,or_none=False):
+
+def one(nodes, or_none=False):
     """
     Assert that there is exactly one node in the give list, and return it.
     """
     if not nodes and or_none:
         return None
-    assert len(nodes) == 1, 'Expected 1 result. Received %d results.' % (len(nodes))
+    assert len(nodes) == 1, 'Expected 1 result. Received %d results.' % (
+        len(nodes))
     return nodes[0]
+
 
 def first(nodes):
     """
@@ -37,19 +41,31 @@ def first(nodes):
     else:
         return None
 
+
 def xpath_eval(node, extra_ns=None):
     """
-    Returns an XPathEvaluator, with namespace prefixes 'bpmn' for http://www.omg.org/spec/BPMN/20100524/MODEL,
+    Returns an XPathEvaluator, with namespace prefixes 'bpmn' for
+    http://www.omg.org/spec/BPMN/20100524/MODEL,
     and additional specified ones
     """
-    namespaces = {'bpmn':BPMN_MODEL_NS}
+    namespaces = {'bpmn': BPMN_MODEL_NS}
     if extra_ns:
         namespaces.update(extra_ns)
     return lambda path: node.findall(path, namespaces)
 
+
 def full_tag(tag):
     """
     Return the full tag name including namespace for the given BPMN tag.
-    In other words, the name with namespace http://www.omg.org/spec/BPMN/20100524/MODEL
+    In other words, the name with namespace
+    http://www.omg.org/spec/BPMN/20100524/MODEL
     """
     return '{%s}%s' % (BPMN_MODEL_NS, tag)
+
+
+def full_attr(attribute_name):
+    """
+    Return the full attribute name including namespace for the given BPMN tag.
+    In other words, the name with namespace http://activiti.org/bpmn
+    """
+    return '{%s}%s' % (ATTRIBUTE_NS, attribute_name)
