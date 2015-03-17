@@ -12,6 +12,7 @@ from SpiffWorkflow.bpmn.BpmnWorkflow import BpmnWorkflow
 from SpiffWorkflow.bpmn.storage.BpmnSerializer import BpmnSerializer
 from SpiffWorkflow.bpmn.storage.CompactWorkflowSerializer import \
     CompactWorkflowSerializer
+from SpiffWorkflow.storage import DictionarySerializer
 from tests.SpiffWorkflow.bpmn.PackagerForTests import PackagerForTests
 
 
@@ -111,6 +112,27 @@ class BpmnTestEngine(object):
             tasks[0].set_data(**set_attribs)
         tasks[0].complete()
 
+    def full_restore(self, state):
+        return BpmnWorkflow.deserialize(DictionarySerializer(), state)
+
+    def _get_full_workflow_state(self):
+        # self.workflow.do_engine_steps()
+        self.workflow.refresh_waiting_tasks()
+        return self.workflow.serialize(serializer=DictionarySerializer())
+
+    def full_save_restore(self):
+        state = self._get_full_workflow_state()
+        logging.debug('Saving state: %s', state)
+        before_dump = self.workflow.get_dump()
+        self.full_restore(state)
+        # We should still have the same state:
+        after_dump = self.workflow.get_dump()
+        after_state = self._get_full_workflow_state()
+        if state != after_state:
+            logging.debug("Before save:\n%s", before_dump)
+            logging.debug("After save:\n%s", after_dump)
+        assert state == after_state
+
     def save_restore(self):
         state = self._get_workflow_state()
         logging.debug('Saving state: %s', state)
@@ -134,7 +156,7 @@ class BpmnTestEngine(object):
             state, workflow_spec=self.spec, read_only=True)
 
     def _get_workflow_state(self):
-        self.workflow.do_engine_steps()
+        # self.workflow.do_engine_steps()
         self.workflow.refresh_waiting_tasks()
         return CompactWorkflowSerializer().serialize_workflow(
             self.workflow, include_spec=False)
