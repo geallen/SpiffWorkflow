@@ -7,17 +7,12 @@
     <bpmn2:serviceTask id="ServiceTask_class" camunda:class="views.module.ViewClass" name="ServiceTask_class">
       <bpmn2:incoming>SequenceFlow_1</bpmn2:incoming>
       <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
-      <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
     </bpmn2:serviceTask>
     <bpmn2:sequenceFlow id="SequenceFlow_1" name="" sourceRef="StartEvent_1" targetRef="ServiceTask_class"/>
     <bpmn2:endEvent id="EndEvent_1">
       <bpmn2:incoming>SequenceFlow_2</bpmn2:incoming>
     </bpmn2:endEvent>
     <bpmn2:sequenceFlow id="SequenceFlow_2" name="" sourceRef="ServiceTask_class" targetRef="EndEvent_1"/>
-    <bpmn2:userTask id="UserTask_1">
-      <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
-    </bpmn2:userTask>
-    <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="ServiceTask_class" targetRef="UserTask_1"/>
   </bpmn2:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
@@ -37,15 +32,6 @@
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="_BPMNShape_ServiceTask_2" targetElement="_BPMNShape_EndEvent_8">
         <di:waypoint xsi:type="dc:Point" x="285.0" y="243.0"/>
         <di:waypoint xsi:type="dc:Point" x="335.0" y="243.0"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="_BPMNShape_UserTask_3" bpmnElement="UserTask_1">
-        <dc:Bounds height="80.0" width="100.0" x="335.0" y="303.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_ServiceTask_2" targetElement="_BPMNShape_UserTask_3">
-        <di:waypoint xsi:type="dc:Point" x="285.0" y="243.0"/>
-        <di:waypoint xsi:type="dc:Point" x="310.0" y="243.0"/>
-        <di:waypoint xsi:type="dc:Point" x="310.0" y="343.0"/>
-        <di:waypoint xsi:type="dc:Point" x="335.0" y="343.0"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
